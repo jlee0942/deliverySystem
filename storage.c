@@ -82,12 +82,14 @@ int str_backupSystem(char* filepath) {
 //char* filepath : filepath and name to read config parameters (row, column, master password, past contexts of the delivery system
 //return : 0 - successfully created, -1 - failed to create the system
 int str_createSystem(char* filepath) {
-	
+	int cnt;
 	int i;
 	int x,y;		//for saving indexnumber
-	char msg[MAX_MSG_SIZE+1];	//for saving message context
+	char msg[MAX_MSG_SIZE+1];	//for saving message context	
+	
 	FILE* fp;
 	fp=fopen("storage.txt","r");
+	
 	
 	if((fp)==NULL)
 	{
@@ -115,25 +117,19 @@ int str_createSystem(char* filepath) {
 	
 	//read from file & initialize struct. data
 	
-	fscanf(fp,"%d %d %d %d %s %s", &x, &y, &store.building, &store.room, store.passwd, msg);	
+	do{
 	
-	store.context = msg;
-	deliverySystem[x][y]= store;
-	
+		fscanf(fp,"%d %d %d %d %s %s", &x, &y, &store.building, &store.room, store.passwd, msg);	
+		cnt=1;
+		store.cnt=cnt;
+		store.context = msg;
+		deliverySystem[x][y]= store;
+		
+	}while((fgetc(fp))!=EOF);
+
+
 	fclose(fp);
-	
-	
-	printf("%d %d\n", systemSize[0], systemSize[1]);
-	printf("%s\n", masterPassword);
-	printf("%d %d %d %d %s %s\n", x, y, deliverySystem[x][y].building, deliverySystem[x][y].room, deliverySystem[x][y].passwd, deliverySystem[x][y].context);	//building, room, passwd error
-	
-	
-	for(i=0;i<systemSize[0];i++)
-	{
-		free(deliverySystem[i]);
-	}
-	free(deliverySystem);	
-	
+
 	return 0;
 }
 
@@ -145,7 +141,7 @@ void str_freeSystem(void) {
 	
 	for(i=0;i<systemSize[0];i++)
 	{
-		free(deliverySystem[systemSize[0]]);
+		free(deliverySystem[i]);
 	}
 	free(deliverySystem);
 	
