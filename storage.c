@@ -85,8 +85,9 @@ int str_createSystem(char* filepath) {
 	
 	int i;
 	int x,y;		//for saving indexnumber
+	char msg[MAX_MSG_SIZE+1];	//for saving message context
 	FILE* fp;
-	fp=fopen("%c","r", filepath);
+	fp=fopen("storage.txt","r");
 	
 	if((fp)==NULL)
 	{
@@ -96,16 +97,46 @@ int str_createSystem(char* filepath) {
 	fscanf(fp,"%d %d", &systemSize[0], &systemSize[1]);
 	fscanf(fp,"%s", masterPassword);
 	
+	//create instance
+	storage_t store;
+	
+	//create memory for pointer
 	deliverySystem=(storage_t**)malloc(systemSize[0]*sizeof(storage_t*));
 	for(i=0;i<systemSize[0];i++)
 	{
-		deliverySystem[systemSize[0]] = (storage_t*)malloc(systemSize[1]*sizeof(storage_t)); 
+		deliverySystem[i] = (storage_t*)malloc(systemSize[1]*sizeof(storage_t)); 
 	}
+	
+	//when failed
+	if (deliverySystem==NULL)
+	{
+		printf("error");					
+	}
+	
+	//read from file & initialize struct. data
+	
+	fscanf(fp,"%d %d %d %d %s %s", &x, &y, &store.building, &store.room, store.passwd, msg);	
+	
+	store.context = msg;
+	deliverySystem[x][y]= store;
 	
 	fclose(fp);
 	
+	
+	printf("%d %d\n", systemSize[0], systemSize[1]);
+	printf("%s\n", masterPassword);
+	printf("%d %d %d %d %s %s\n", x, y, deliverySystem[x][y].building, deliverySystem[x][y].room, deliverySystem[x][y].passwd, deliverySystem[x][y].context);	//building, room, passwd error
+	
+	
+	for(i=0;i<systemSize[0];i++)
+	{
+		free(deliverySystem[i]);
+	}
+	free(deliverySystem);	
+	
 	return 0;
 }
+
 
 //free the memory of the deliverySystem 
 void str_freeSystem(void) {
@@ -190,6 +221,23 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 //return : 0 - successfully extracted, -1 = failed to extract
 int str_extractStorage(int x, int y) {
 	
+	int pswdInput;		//save password input from user
+	
+	printf("Input your password:");
+	pswdInput=getIntegerInput();
+
+	//if pswd does not match -> return -1;
+	if (pswdInput!= deliverySystem[x][y].passwd)
+	{
+		return -1;
+	}
+
+	//if pswd matches -> initStorage(x,y), print context & return 0;
+	printf("Message for You: %s\n", deliverySystem[x][y].context);
+	
+	initStorage(x,y);	//delete data in txt file?
+		
+		return 0;		
 }
 
 //find my package from the storage
@@ -197,6 +245,8 @@ int str_extractStorage(int x, int y) {
 //int nBuilding, int nRoom : my building/room numbers
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) {
-	
+	//get building & room num from user
+		//read txtfile and find matching num 
+			//count num of matching info
 	return cnt;
 }
