@@ -88,7 +88,7 @@ int str_createSystem(char* filepath) {
 	char msg[MAX_MSG_SIZE+1];	//for saving message context	
 	
 	FILE* fp;
-	fp=fopen("storage.txt","r");
+	fp=fopen("%c","r", filepath);
 	
 	
 	if((fp)==NULL)
