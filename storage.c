@@ -51,9 +51,8 @@ static void printStorageInside(int x, int y) {
 //and allocate memory to the context pointer
 //int x, int y : cell coordinate to be initialized
 static void initStorage(int x, int y) {
-	/*
-	FILE *fp;
-	fp = fopen("STORAGE_FILEPATH","r");*/
+
+
 }
 
 //get password input and check if it is correct for the cell (x,y)
@@ -117,16 +116,18 @@ int str_createSystem(char* filepath) {
 	
 	//read from file & initialize struct. data
 	
-	do{
-	
-		fscanf(fp,"%d %d %d %d %s %s", &x, &y, &store.building, &store.room, store.passwd, msg);	
-		cnt=1;
-		store.cnt=cnt;
+	while((fgetc(fp))!=EOF)
+	{
+		fscanf(fp,"%d %d %d %d %s %s", &x, &y, &store.building, &store.room, store.passwd, msg);		
+		storedCnt++;				
+		//allocate memory of length of delivery context
+		store.context = (char*)malloc(strlen(msg)*sizeof(char));
 		store.context = msg;
-		deliverySystem[x][y]= store;
-		
-	}while((fgetc(fp))!=EOF);
-
+		deliverySystem[x][y] = store;
+		deliverySystem[x][y].cnt=1;
+		printf("%d %d %s %s\n", deliverySystem[x][y].building, deliverySystem[x][y].room, deliverySystem[x][y].passwd, deliverySystem[x][y].context);	//building, room, passwd error
+	}
+//free(store.context);
 
 	fclose(fp);
 
