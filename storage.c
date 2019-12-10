@@ -115,9 +115,9 @@ int str_createSystem(char* filepath) {
 	}
 	
 		//initialize cnt
-	for (j=0;j<systemSize[1];j++)
+	for (i=0;i<systemSize[0];i++)
 	{
-		for (i=0;i<systemSize[0];i++)
+		for (j=0;j<systemSize[1];j++)
 		{
 			deliverySystem[i][j].cnt=0;
 		}
@@ -273,11 +273,11 @@ int str_extractStorage(int x, int y) {
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) {
 	//read txtfile and find matching num
-	for(i=0; i<systemSize[1];i++)
-		for(j=0; i<systemSize[0];j++)
+	for(i=0; i<systemSize[0];i++)
+		for(j=0; i<systemSize[1];j++)
 		{
-			if(strcmp(nBuliding, delivery[j][i].buildng)==0)
-				if(strcmp(nRoom, delivery[j][i].room)==0)
+			if(strcmp(nBuliding, delivery[i][j].buildng)==0)
+				if(strcmp(nRoom, delivery[i][j].room)==0)
 				{
 					//count num of matching info	
 					cnt++;				
