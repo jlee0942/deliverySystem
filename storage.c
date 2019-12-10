@@ -114,19 +114,32 @@ int str_createSystem(char* filepath) {
 		printf("error");					
 	}
 	
+		//initialize cnt
+	for (j=0;j<systemSize[1];j++)
+	{
+		for (i=0;i<systemSize[0];i++)
+		{
+			deliverySystem[i][j].cnt=0;
+		}
+	}
+	
+	
 	//read from file & initialize struct. data
 	
 	while((fgetc(fp))!=EOF)
 	{
+
 		fscanf(fp,"%d %d %d %d %s %s", &x, &y, &store.building, &store.room, store.passwd, msg);		
 		storedCnt++;				
 		//allocate memory of length of delivery context
 		store.context = (char*)malloc(strlen(msg)*sizeof(char));
-		store.context = msg;
+		strcpy(store.context,msg);
 		deliverySystem[x][y] = store;
 		deliverySystem[x][y].cnt=1;
 		printf("%d %d %s %s\n", deliverySystem[x][y].building, deliverySystem[x][y].room, deliverySystem[x][y].passwd, deliverySystem[x][y].context);	//building, room, passwd error
+	
 	}
+	
 //free(store.context);
 
 	fclose(fp);
@@ -243,10 +256,12 @@ int str_extractStorage(int x, int y) {
 	{
 		return -1;
 	}
-
+	
+	
 	//if pswd matches -> initStorage(x,y), print context & return 0;
 	printf("Message for You: %s\n", deliverySystem[x][y].context);
 	
+	printStorageInside(x,y);	//print stored message for you
 	initStorage(x,y);	//delete data in txt file?
 		
 		return 0;		
@@ -258,11 +273,11 @@ int str_extractStorage(int x, int y) {
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) {
 	//read txtfile and find matching num
-	for(i=0; i<systemSize[0];i++)
-		for(j=0; i<systemSize[1];j++)
+	for(i=0; i<systemSize[1];i++)
+		for(j=0; i<systemSize[0];j++)
 		{
-			if(strcmp(nBuliding, delivery[i][j].buildng)==0)
-				if(strcmp(nRoom, delivery[i][j].room)==0)
+			if(strcmp(nBuliding, delivery[j][i].buildng)==0)
+				if(strcmp(nRoom, delivery[j][i].room)==0)
 				{
 					//count num of matching info	
 					cnt++;				
