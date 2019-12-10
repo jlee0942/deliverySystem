@@ -207,6 +207,21 @@ int str_checkStorage(int x, int y) {
 //return : 0 - successfully put the package, -1 - failed to put
 int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) {
 	
+	FILE* fp;
+	fp=fopen("%c", "a+", STORAGE FILEPATH);
+	
+	//failed to open file(put storage)
+	if((fp)==NULL)
+	{
+		return -1;	
+	}
+	//additionally write on txt file
+	fprint("%d %d% %d %d %s %s", x ,y, nBuilding, nRoom, passwd, msg);
+	
+	fclose(fp);
+	
+		return 0;
+	
 }
 
 
@@ -241,8 +256,17 @@ int str_extractStorage(int x, int y) {
 //int nBuilding, int nRoom : my building/room numbers
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) {
-	//get building & room num from user
-		//read txtfile and find matching num 
-			//count num of matching info
+	//read txtfile and find matching num
+	for(i=0; i<systemSize[0];i++)
+		for(j=0; i<systemSize[1];j++)
+		{
+			if(strcmp(nBuliding, delivery[i][j].buildng)==0)
+				if(strcmp(nRoom, delivery[i][j].room)==0)
+				{
+					//count num of matching info	
+					cnt++;				
+				}	
+		}
+		
 	return cnt;
 }
