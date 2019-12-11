@@ -60,6 +60,17 @@ static void initStorage(int x, int y) {
 //return : 0 - password is matching, -1 - password is not matching
 static int inputPasswd(int x, int y) {
 	
+	int pswdInput;		//save password input from user
+	
+	printf("Input your password:");
+	pswdInput=getIntegerInput();
+	
+	if(strcmp(pswdInput, deilverySystem[x][y].passwd)!=0)
+	{
+		return -1;
+	}
+	
+	return 0;
 }
 
 
@@ -73,6 +84,9 @@ static int inputPasswd(int x, int y) {
 //return : 0 - backup was successfully done, -1 - failed to backup
 int str_backupSystem(char* filepath) {
 	
+	FILE* fp;
+	fp = fopen(filepath,"r");
+	
 }
 
 
@@ -81,13 +95,12 @@ int str_backupSystem(char* filepath) {
 //char* filepath : filepath and name to read config parameters (row, column, master password, past contexts of the delivery system
 //return : 0 - successfully created, -1 - failed to create the system
 int str_createSystem(char* filepath) {
-	int cnt;
-	int i;
+	int i,j;
 	int x,y;		//for saving indexnumber
 	char msg[MAX_MSG_SIZE+1];	//for saving message context	
 	
 	FILE* fp;
-	fp=fopen("%c","r", filepath);
+	fp = fopen(filepath,"r");
 	
 	
 	if((fp)==NULL)
@@ -114,7 +127,7 @@ int str_createSystem(char* filepath) {
 		printf("error");					
 	}
 	
-		//initialize cnt
+	//initialize cnt
 	for (i=0;i<systemSize[0];i++)
 	{
 		for (j=0;j<systemSize[1];j++)
@@ -246,25 +259,20 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 //return : 0 - successfully extracted, -1 = failed to extract
 int str_extractStorage(int x, int y) {
 	
-	int pswdInput;		//save password input from user
-	
-	printf("Input your password:");
-	pswdInput=getIntegerInput();
+	inputPasswd(x,y);
 
 	//if pswd does not match -> return -1;
-	if (pswdInput!= deliverySystem[x][y].passwd)
+	if (inputPasswd(x,y)!=0)
 	{
 		return -1;
-	}
-	
-	
+	}	
 	//if pswd matches -> initStorage(x,y), print context & return 0;
-	printf("Message for You: %s\n", deliverySystem[x][y].context);
+	printf("extracting the storage (%i, %i)...\n", x, y );
 	
 	printStorageInside(x,y);	//print stored message for you
 	initStorage(x,y);	//delete data in txt file?
 		
-		return 0;		
+	return 0;		
 }
 
 //find my package from the storage
