@@ -31,7 +31,6 @@ static char masterPassword[PASSWD_LEN+1];	//master password
 
 
 
-
 // ------- inner functions ---------------
 
 //print the inside context of a specific cell
@@ -57,6 +56,7 @@ static void initStorage(int x, int y) {
 	deliverySystem[x][y].room=NULL;
 	deliverySystem[x][y].cnt=NULL;
 	deliverySystem[x][y].passwd[0]=NULL;
+	deliverySystem[x][y].context[0]=NULL;
 	free(store.context);
 	store.context=NULL;
 }
@@ -71,9 +71,12 @@ static int inputPasswd(int x, int y) {
 	
 	scanf("%4s", input);	
 
-	if(strcmp(input, deliverySystem[x][y].passwd)!=0)
+	if(strcmp(input,masterPassword)!=0)
 	{
-		return -1;
+		if(strcmp(input, deliverySystem[x][y].passwd)!=0)
+		{	
+			return -1;
+		}
 	}
 	
 	return 0;
@@ -181,7 +184,6 @@ int str_createSystem(char* filepath) {
 	
 	}
 
-
 	fclose(fp);
 
 	return 0;
@@ -200,6 +202,7 @@ void str_freeSystem(void) {
 	free(deliverySystem);
 	deliverySystem=NULL;
 	free(store.context);
+	store.context=NULL;
 
 }
 
@@ -263,25 +266,6 @@ int str_checkStorage(int x, int y) {
 //return : 0 - successfully put the package, -1 - failed to put
 int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) {
 	
-/*	int i,j;
-*/	
-/*	FILE* fp;
-	fp=fopen("%c", "w", STORAGE_FILEPATH);
-	
-	//failed to open file(put storage)
-	if((fp)==NULL)
-	{
-		return -1;	
-	}
-
-	//additionally write on txt file
-	fprint("%i %i %i %i %s %s\n", x ,y, nBuilding, nRoom, passwd, msg);
-	
-	fclose(fp);
-	
-		return 0;
-*/		
-	
 	//in order to add info on txt file
 	store.context = (char*)malloc((strlen(msg)+1)*sizeof(char));
 	strcpy(store.context,msg);
@@ -293,6 +277,8 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 	deliverySystem[x][y].cnt=1;
 	
 	printf("%i %i %i %i %s %s",x, y, deliverySystem[x][y].building,deliverySystem[x][y].room,deliverySystem[x][y].passwd,deliverySystem[x][y].context);
+	
+	storedCnt++;
 	
 	return 0;
 	
@@ -329,13 +315,14 @@ int str_extractStorage(int x, int y) {
 	printf("extracting the storage (%i, %i)...\n", x, y );
 	
 	printStorageInside(x,y);	//print stored message for you
-	initStorage(x,y);	//delete data in txt file?
+	initStorage(x,y);	//initialize
+	
+	storedCnt--;
 		
 	return 0;		
 }
 
 
-//////////////////////////////////////////////////////////////has problem
 //find my package from the storage
 //print all the cells (x,y) which has my package
 //int nBuilding, int nRoom : my building/room numbers
@@ -345,16 +332,21 @@ int str_findStorage(int nBuilding, int nRoom) {
 	int i, j;
 	int cnt=0;
 	
+	
 	for(i=0; i<systemSize[0];i++)
-		for(j=0; i<systemSize[1];j++)
+	{
+		for(j=0; j<systemSize[1];j++)
 		{
 			if(nBuilding == deliverySystem[i][j].building)
-				if(nRoom== deliverySystem[i][j].room)
-				{
+			{
+				if(nRoom == deliverySystem[i][j].room)
+				{ 	
+					printf(" -----------> Found a package in (%i,%i)\n", i, j);		
 					//count num of matching info	
-					cnt++;				
-				}	
+					cnt++;	
+				}
+			}
 		}
-		
+	}
 	return cnt;
 }
