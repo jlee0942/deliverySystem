@@ -21,7 +21,7 @@ typedef struct {
 	char *context;
 } storage_t;
 
-//create instance
+//create structure instance
 storage_t store;
 
 static storage_t** deliverySystem; 			//deliverySystem
@@ -49,6 +49,7 @@ static void printStorageInside(int x, int y) {
 
 //initialize the storage
 //set all the member variable as an initial value
+//free store.context
 //int x, int y : cell coordinate to be initialized
 static void initStorage(int x, int y) {
 	
@@ -59,7 +60,6 @@ static void initStorage(int x, int y) {
 	deliverySystem[x][y].context=NULL;
 	free(store.context);
 	store.context=NULL;
-	
 }
 
 //get password input and check if it is correct for the cell (x,y)
@@ -72,9 +72,9 @@ static int inputPasswd(int x, int y) {
 	
 	scanf("%4s", input);	
 
-	if(strcmp(input,masterPassword)!=0)
+	if(strcmp(input,masterPassword)!=0)	//input is not masterpassword
 	{
-		if(strcmp(input, deliverySystem[x][y].passwd)!=0)
+		if(strcmp(input, deliverySystem[x][y].passwd)!=0)	//input is not masterpassword nor password
 		{	
 			return -1;
 		}
@@ -141,11 +141,9 @@ int str_createSystem(char* filepath) {
 	{
 		return -1;	
 	}
-	
+	//get size of system&masterpassword
 	fscanf(fp,"%d %d", &systemSize[0], &systemSize[1]);
 	fscanf(fp,"%s", masterPassword);
-	
-
 	
 	//create memory for pointer
 	deliverySystem=(storage_t**)malloc(systemSize[0]*sizeof(storage_t*));
@@ -183,14 +181,14 @@ int str_createSystem(char* filepath) {
 		printf("%d %d %s %s\n", deliverySystem[x][y].building, deliverySystem[x][y].room, deliverySystem[x][y].passwd, deliverySystem[x][y].context);	//building, room, passwd error
 	}
 
-
+	//close file
 	fclose(fp);
 
 	return 0;
 }
 
 
-//free the memory of the deliverySystem 
+//free the memory of the deliverySystem & store.context 
 void str_freeSystem(void) {
 	
 	int i;
@@ -267,8 +265,15 @@ int str_checkStorage(int x, int y) {
 int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) {
 	
 	//in order to add info on txt file
-	store.context = (char*)malloc((strlen(msg)+1)*sizeof(char));
-	strcpy(store.context,msg);
+	store.context = (char*)malloc((strlen(msg)+1)*sizeof(char));		//allocate memory for context
+	
+	if(store.context==NULL)
+	{
+		printf("error on allocating memory for message");
+		return -1;
+	}
+	
+	strcpy(store.context,msg);											//copy message to deliverySystem
 	
 	deliverySystem[x][y].building = nBuilding;
 	deliverySystem[x][y].room = nRoom;
@@ -278,25 +283,11 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 	
 	printf("%i %i %i %i %s %s",x, y, deliverySystem[x][y].building,deliverySystem[x][y].room,deliverySystem[x][y].passwd,deliverySystem[x][y].context);
 	
-	storedCnt++;
+	storedCnt++;		//add to current number of occupied cell
 	
 	return 0;
-	
-/*	fprintf(fp, "%i %i\n", systemSize[0], systemSize[1]);
-	fprintf(fp,"%s\n", masterPassword);
-	
-	//rewrite currently existing storages on textfile.	
-	for(i=0;i<systemSize[0];i++)
-		for (j=0;j<systemSize[1];j++)
-		{
-			if((deliverySystem[i][j].cnt)!=0)
-			{
-				fprintf(fp, "%i %i %i %i %s %s\n", i, j, deliverySystem[i][j].building, deliverySystem[i][j].room, deliverySystem[i][j].passwd, deliverySystem[i][j].context);	
-			}
-		
-		}	
-	
-*/}
+
+}
 
 
 
@@ -317,7 +308,7 @@ int str_extractStorage(int x, int y) {
 	printStorageInside(x,y);	//print stored message for you
 	initStorage(x,y);	//initialize
 	
-	storedCnt--;
+	storedCnt--;		//subtract from remaining number of occupied cell
 		
 	return 0;		
 }
@@ -328,11 +319,11 @@ int str_extractStorage(int x, int y) {
 //int nBuilding, int nRoom : my building/room numbers
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) {
-	//read txtfile and find matching num
+	
 	int i, j;
-	int cnt=0;
+	int cnt=0;		//set initial cnt as zero
 	
-	
+	//find matching information
 	for(i=0; i<systemSize[0];i++)
 	{
 		for(j=0; j<systemSize[1];j++)
