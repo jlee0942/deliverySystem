@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "storage.h"
 
+
 #define N_BUILDING				10
 #define N_FLOOR					10
 #define N_ROOM					10
@@ -197,6 +198,6 @@ int main(int argc, char *argv[]) {
 	} while (cmd != 0);
 	
 	str_freeSystem();
-	
+
 	return 0;
 }

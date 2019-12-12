@@ -178,7 +178,6 @@ int str_createSystem(char* filepath) {
 		strcpy(store.context,msg);
 		deliverySystem[x][y] = store;
 		deliverySystem[x][y].cnt=1;
-		printf("%d %d %s %s\n", deliverySystem[x][y].building, deliverySystem[x][y].room, deliverySystem[x][y].passwd, deliverySystem[x][y].context);	//building, room, passwd error
 	}
 
 	//close file
