@@ -56,9 +56,10 @@ static void initStorage(int x, int y) {
 	deliverySystem[x][y].room=NULL;
 	deliverySystem[x][y].cnt=NULL;
 	deliverySystem[x][y].passwd[0]=NULL;
-	deliverySystem[x][y].context[0]=NULL;
+	deliverySystem[x][y].context=NULL;
 	free(store.context);
 	store.context=NULL;
+	
 }
 
 //get password input and check if it is correct for the cell (x,y)
@@ -109,6 +110,7 @@ int str_backupSystem(char* filepath) {
 	for(i=0;i<systemSize[0];i++)
 		for (j=0;j<systemSize[1];j++)
 		{
+
 			if((deliverySystem[i][j].cnt)!=0)
 			{
 				fprintf(fp, "%i %i %i %i %s %s\n", i, j, deliverySystem[i][j].building, deliverySystem[i][j].room, deliverySystem[i][j].passwd, deliverySystem[i][j].context);	
@@ -169,20 +171,18 @@ int str_createSystem(char* filepath) {
 	
 	
 	//read from file & initialize struct. data
-	
-	while((fgetc(fp))!=EOF)
+	while(fscanf(fp,"%d %d",&x,&y)==2)
 	{
-
-		fscanf(fp,"%d %d %d %d %s %s", &x, &y, &store.building, &store.room, store.passwd, msg);		
+		fscanf(fp,"%d %d %s %s", &store.building, &store.room, store.passwd, msg);		
 		storedCnt++;				
 		//allocate memory of length of delivery context
 		store.context = (char*)malloc((strlen(msg)+1)*sizeof(char));
 		strcpy(store.context,msg);
 		deliverySystem[x][y] = store;
-		deliverySystem[x][y].cnt++;
+		deliverySystem[x][y].cnt=1;
 		printf("%d %d %s %s\n", deliverySystem[x][y].building, deliverySystem[x][y].room, deliverySystem[x][y].passwd, deliverySystem[x][y].context);	//building, room, passwd error
-	
 	}
+
 
 	fclose(fp);
 
@@ -211,7 +211,7 @@ void str_freeSystem(void) {
 //print the current state of the whole delivery system (which cells are occupied and the destination of the each occupied cells)
 void str_printStorageStatus(void) {
 	int i, j;
-	printf("----------------------------- Delivery Storage System Status (%i occupied out of %i )-----------------------------\n\n", storedCnt-1, systemSize[0]*systemSize[1]);
+	printf("----------------------------- Delivery Storage System Status (%i occupied out of %i )-----------------------------\n\n", storedCnt, systemSize[0]*systemSize[1]);
 	
 	printf("\t");
 	for (j=0;j<systemSize[1];j++)
