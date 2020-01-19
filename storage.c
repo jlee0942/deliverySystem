@@ -58,8 +58,7 @@ static void initStorage(int x, int y) {
 	deliverySystem[x][y].cnt=NULL;
 	deliverySystem[x][y].passwd[0]=NULL;
 	deliverySystem[x][y].context=NULL;
-	free(store.context);
-	store.context=NULL;
+	free(deliverySystem[x][y].context);
 }
 
 //get password input and check if it is correct for the cell (x,y)
